@@ -1,0 +1,56 @@
+version: "3"
+services:
+  proxy:
+    image: caddy:2.0.0-alpine
+    ports:
+      - "3000:80"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - backend
+      - frontend
+
+  mysql:
+    image: mariadb:10.3.9
+    restart: always
+    environment:
+      MYSQL_DATABASE: portal
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: password
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    expose:
+      - '3306'
+    ports:
+      - '3306:3306'
+
+  backend:
+    build: .
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: portal
+    tty: true
+    entrypoint: dockerize -timeout 60s -wait tcp://mysql:3306
+    command: ./oiscon-portal
+    depends_on:
+      - mysql
+
+  frontend:
+    build: ./client
+    volumes:
+      - './client:/app'
+    tty: true
+    entrypoint: npm run serve
+
+  adminer:
+    image: adminer:4.7.5
+    restart: always
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+      ADMINER_DESIGN: mvt
+    expose:
+      - "8080"
+    ports:
+      - "4000:8080"
