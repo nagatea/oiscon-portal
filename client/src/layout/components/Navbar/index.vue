@@ -17,39 +17,35 @@
       >
         <div class="avatar-wrapper">
           <img
-            :src="avatar+'?imageView2/1/w/80/h/80'"
+            :src="profileImageURL"
             class="user-avatar"
           >
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/">
+          <div v-if="name">
+            <router-link to="/">
+              <el-dropdown-item>
+                {{ displayName }}
+              </el-dropdown-item>
+            </router-link>
+          </div>
+          <div v-else>
             <el-dropdown-item>
-              Home
+              <span
+                style="display:block;"
+                @click="login"
+              >Login</span>
             </el-dropdown-item>
-          </router-link>
-          <a
-            target="_blank"
-            href="https://github.com/armour/vue-typescript-admin-template/"
-          >
-            <el-dropdown-item>
-              Github
+          </div>
+          <div v-if="name">
+            <el-dropdown-item divided>
+              <span
+                style="display:block;"
+                @click="logout"
+              >Logout</span>
             </el-dropdown-item>
-          </a>
-          <a
-            target="_blank"
-            href="https://armour.github.io/vue-typescript-admin-docs/"
-          >
-            <el-dropdown-item>
-              Docs
-            </el-dropdown-item>
-          </a>
-          <el-dropdown-item divided>
-            <span
-              style="display:block;"
-              @click="logout"
-            >LogOut</span>
-          </el-dropdown-item>
+          </div>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -79,17 +75,28 @@ export default class extends Vue {
     return AppModule.device.toString()
   }
 
-  get avatar() {
-    return UserModule.avatar
+  get name() {
+    return UserModule.name
+  }
+
+  get displayName() {
+    return UserModule.displayName
+  }
+
+  get profileImageURL() {
+    return UserModule.profileImageURL
   }
 
   private toggleSideBar() {
     AppModule.ToggleSideBar(false)
   }
 
+  private async login() {
+    await UserModule.Login()
+  }
+
   private async logout() {
-    await UserModule.LogOut()
-    this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    await UserModule.Logout()
   }
 }
 </script>

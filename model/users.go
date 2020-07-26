@@ -8,9 +8,10 @@ import (
 // User userの構造体
 type User struct {
 	GormModel
-	Name        string `gorm:"type:varchar(32);unique;not null;size:50" json:"name"`
-	DisplayName string `gorm:"type:varchar(64);not null" json:"displayName"`
-	Admin       bool   `gorm:"default:false" json:"admin"`
+	Name            string `gorm:"type:varchar(32);unique;not null;size:50" json:"name"`
+	DisplayName     string `gorm:"type:varchar(64);not null" json:"displayName"`
+	ProfileImageURL string `gorm:"type:varchar(64)" json:"profileImageURL"`
+	Admin           bool   `gorm:"default:false" json:"admin"`
 }
 
 // RequestPutUsersBody 名前変更用のリクエストボディ
@@ -70,6 +71,7 @@ func UpdateUser(newUser User) (User, error) {
 		return User{}, errors.New("指定したuserが存在しません")
 	}
 	user.DisplayName = newUser.DisplayName
+	user.ProfileImageURL = newUser.ProfileImageURL
 	user.Admin = newUser.Admin
 	db.Save(&user)
 	return user, nil

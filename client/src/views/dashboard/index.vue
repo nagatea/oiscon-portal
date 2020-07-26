@@ -4,10 +4,10 @@
       name:{{ name }}
     </div>
     <div class="dashboard-text">
-      roles:<span
-        v-for="role in roles"
-        :key="role"
-      >{{ role }}</span>
+      displayName:{{ displayName }}
+    </div>
+    <div class="dashboard-text">
+      admin:{{ admin }}
     </div>
   </div>
 </template>
@@ -24,8 +24,12 @@ export default class extends Vue {
     return UserModule.name
   }
 
-  get roles() {
-    return UserModule.roles
+  get displayName() {
+    return UserModule.displayName
+  }
+
+  get admin() {
+    return UserModule.admin
   }
 }
 </script>
