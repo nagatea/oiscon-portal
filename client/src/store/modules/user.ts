@@ -1,28 +1,20 @@
 import { VuexModule, Module, Action, Mutation, getModule } from 'vuex-module-decorators'
-import { login, logout, getUserInfo } from '@/api/users'
-import { getToken, setToken, removeToken } from '@/utils/cookies'
+import { getUserInfo } from '@/api/users'
 import store from '@/store'
 
 export interface IUserState {
-  token: string
   name: string
-  avatar: string
-  introduction: string
-  roles: string[]
+  displayName: string
+  profileImageURL: string
+  admin: boolean
 }
 
 @Module({ dynamic: true, store, name: 'user' })
 class User extends VuexModule implements IUserState {
-  public token = getToken() || ''
   public name = ''
-  public avatar = ''
-  public introduction = ''
-  public roles: string[] = []
-
-  @Mutation
-  private SET_TOKEN(token: string) {
-    this.token = token
-  }
+  public displayName = ''
+  public profileImageURL = ''
+  public admin: boolean = false
 
   @Mutation
   private SET_NAME(name: string) {
@@ -30,65 +22,41 @@ class User extends VuexModule implements IUserState {
   }
 
   @Mutation
-  private SET_AVATAR(avatar: string) {
-    this.avatar = avatar
+  private SET_DISPLAY_NAME(displayName: string) {
+    this.displayName = displayName
   }
 
   @Mutation
-  private SET_INTRODUCTION(introduction: string) {
-    this.introduction = introduction
+  private SET_PROFILE_IMAGE_URL(profileImageURL: string) {
+    this.profileImageURL = profileImageURL
   }
 
   @Mutation
-  private SET_ROLES(roles: string[]) {
-    this.roles = roles
-  }
-
-  @Action
-  public async Login(userInfo: { username: string, password: string }) {
-    let { username, password } = userInfo
-    username = username.trim()
-    const { data } = await login({ username, password })
-    setToken(data.accessToken)
-    this.SET_TOKEN(data.accessToken)
-  }
-
-  @Action
-  public ResetToken() {
-    removeToken()
-    this.SET_TOKEN('')
-    this.SET_ROLES([])
+  private SET_ADMIN(admin: boolean) {
+    this.admin = admin
   }
 
   @Action
   public async GetUserInfo() {
-    if (this.token === '') {
-      throw Error('GetUserInfo: token is undefined!')
-    }
-    const { data } = await getUserInfo({ /* Your params here */ })
-    if (!data) {
+    const user = await getUserInfo()
+    if (!user) {
       throw Error('Verification failed, please Login again.')
     }
-    const { roles, name, avatar, introduction } = data.user
-    // roles must be a non-empty array
-    if (!roles || roles.length <= 0) {
-      throw Error('GetUserInfo: roles must be a non-null array!')
-    }
-    this.SET_ROLES(roles)
+    const { admin, name, displayName, profileImageURL } = user.data
+    this.SET_ADMIN(admin)
     this.SET_NAME(name)
-    this.SET_AVATAR(avatar)
-    this.SET_INTRODUCTION(introduction)
+    this.SET_DISPLAY_NAME(displayName)
+    this.SET_PROFILE_IMAGE_URL(profileImageURL)
   }
 
   @Action
-  public async LogOut() {
-    if (this.token === '') {
-      throw Error('LogOut: token is undefined!')
-    }
-    await logout()
-    removeToken()
-    this.SET_TOKEN('')
-    this.SET_ROLES([])
+  public async Login() {
+    window.location.assign(process.env.VUE_APP_BASE_API + 'auth/github')
+  }
+
+  @Action
+  public async Logout() {
+    window.location.assign(process.env.VUE_APP_BASE_API + 'auth/logout')
   }
 }
 

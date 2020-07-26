@@ -15,7 +15,7 @@ Vue.use(Router)
 */
 
 export default new Router({
-  // mode: 'history',  // Enable this if you need.
+  mode: 'history',
   scrollBehavior: (to, from, savedPosition) => {
     if (savedPosition) {
       return savedPosition
@@ -26,11 +26,6 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/login',
-      component: () => import(/* webpackChunkName: "login" */ '@/views/login/index.vue'),
-      meta: { hidden: true }
-    },
-    {
       path: '/404',
       component: () => import(/* webpackChunkName: "404" */ '@/views/404.vue'),
       meta: { hidden: true }
@@ -38,10 +33,9 @@ export default new Router({
     {
       path: '/',
       component: Layout,
-      redirect: '/dashboard',
       children: [
         {
-          path: 'dashboard',
+          path: '',
           component: () => import(/* webpackChunkName: "dashboard" */ '@/views/dashboard/index.vue'),
           meta: {
             title: 'Dashboard',

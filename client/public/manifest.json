@@ -1,6 +1,6 @@
 {
-  "name": "Vue Typescript Admin",
-  "short_name": "Vue Ts Admin",
+  "name": "oiscon-portal",
+  "short_name": "oiscon",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
