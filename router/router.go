@@ -18,6 +18,7 @@ func SetupRouting(e *echo.Echo) {
 		{
 			apiAuth.GET("/github", AuthGitHub)
 			apiAuth.GET("/github/callback", AuthGitHubCallback)
+			apiAuth.GET("/logout", RevokeSession)
 		}
 	}
 

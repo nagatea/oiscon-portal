@@ -2,7 +2,6 @@ package router
 
 import (
 	"os"
-	"fmt"
 	"time"
 	"context"
 	"net/http"
@@ -155,4 +154,15 @@ func CreateJWTToken(userName string) (string, error) {
 		return "", err
 	}
 	return tokenString, nil
+}
+
+// RevokeSession セッションを破棄する
+func RevokeSession(c echo.Context) error {
+	c.SetCookie(&http.Cookie{
+		Name:     "oiscon_session",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+	})
+	return c.Redirect(http.StatusFound, "/")
 }
